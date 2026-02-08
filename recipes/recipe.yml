@@ -24,6 +24,7 @@ modules:
       files:
         - https://repository.mullvad.net/rpm/stable/mullvad.repo
         - https://pkg.cloudflareclient.com/cloudflare-warp-ascii.repo
+        - https://packages.microsoft.com/yumrepos/vscode/config.repo
       nonfree: rpmfusion
     install:
       skip-unavailable: true
@@ -70,7 +71,8 @@ modules:
         scope: system
         repo:
           url: https://raw.githubusercontent.com/ShyVortex/helium-flatpak/refs/heads/main/helium.flatpakrepo
-        include:
+          name: helium
+        install:
           - com.imputnet.Helium
 
   - type: systemd
