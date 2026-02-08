@@ -1,45 +1,110 @@
 ---
-# yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
-# image will be published to ghcr.io/<user>/<name>
-name: template
-# description will be included in the image's metadata
-description: This is my personal OS image.
+name: bluefin-zenbook
+description: Custom Bluefin image for ASUS ZenBook UX393EA
 
-# the base image to build on top of (FROM) and the version tag to use
-base-image: ghcr.io/ublue-os/silverblue-main
-image-version: 42 # latest is also supported if you want new updates ASAP
+base-image: ghcr.io/ublue-os/bluefin
+image-version: latest
 
-# module configuration, executed in order
-# you can include multiple instances of the same module
 modules:
   - type: files
     files:
       - source: system
-        destination: / # copies files/system/* (* means everything inside it) into your image's root folder /
+        destination: / 
+
+  - type: bling
+    install:
+      - dconf-update-service
 
   - type: dnf
     repos:
       copr:
         - atim/starship
+        - lukenukem/asus-linux
+      files:
+        - https://repository.mullvad.net/rpm/stable/mullvad.repo
+        - https://pkg.cloudflareclient.com/cloudflare-warp-ascii.repo
+      nonfree: rpmfusion
     install:
+      skip-unavailable: true
+      allow-erasing: true
       packages:
-        - micro
+        - atuin
+        - bat
+        - byobu
+        - fd-find
+        - ripgrep
+        - tealdeer
+        - ugrep
+        - zoxide
         - starship
+        - asusctl
+        - thermald
+        - intel-media-driver
+        - libva-utils
+        - tuned-ppd
+        - powertop
+        - intel-gpu-tools
+        - cloudflare-warp
+        - mullvad-vpn
+        - virt-manager
+        - podman-compose
+        - cargo
     remove:
       packages:
-        # example: removing firefox (in favor of the flatpak)
-        # "firefox" is the main package, "firefox-langpacks" is a dependency
         - firefox
-        - firefox-langpacks # also remove firefox dependency (not required for all packages, this is a special case)
+        - firefox-langpacks 
+        - power-profiles-daemon 
 
   - type: default-flatpaks
     configurations:
-      - notify: true # Send notification after install/uninstall is finished (true/false)
+      - notify: true 
         scope: system
-        # If no repo information is specified, Flathub will be used by default
-        install: # system flatpaks we want all users to have and not remove
+        install: 
           - org.mozilla.firefox
           - org.gnome.Loupe
-      - scope: user # Also add Flathub user repo, but no user packages
+          - net.mullvad.MullvadBrowser
+      - notify: true
+        scope: system
+        repo:
+          url: https://raw.githubusercontent.com/ShyVortex/helium-flatpak/refs/heads/main/helium.flatpakrepo
+        include:
+          - com.imputnet.Helium
 
-  - type: signing # this sets up the proper policy & signing files for signed images to work fully
+  - type: systemd
+    system:
+      enabled:
+        - asusd
+        - thermald
+        - tuned
+      disabled:
+        - mullvad-daemon.service
+        - warp-svc.service
+
+  - type: kargs
+    kargs:
+      - i915.force_probe=!9a49
+      - xe.force_probe=9a49
+      - i915.enable_psr=1
+      - kernel.nmi_watchdog=0
+
+  - type: fonts
+    fonts:
+      nerd-fonts:
+        - FiraCode
+        - Hack
+        - SourceCodePro
+        - Terminus
+        - JetBrainsMono
+        - NerdFontsSymbolsOnly
+      google-fonts:
+        - Alegreya
+        - Cabin
+        - Inter
+        - Lato
+        - Montserrat
+        - Mulish
+        - Open Sans
+        - Roboto
+        - Rubik
+
+  - type: signing
