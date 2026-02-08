@@ -20,6 +20,7 @@ modules:
       copr:
         - atim/starship
         - lukenukem/asus-linux
+        - starfish/howdy-beta
       files:
         - https://repository.mullvad.net/rpm/stable/mullvad.repo
         - https://pkg.cloudflareclient.com/cloudflare-warp-ascii.repo
@@ -49,6 +50,8 @@ modules:
         - virt-manager
         - podman-compose
         - cargo
+        - howdy
+        - code
     remove:
       packages:
         - firefox
