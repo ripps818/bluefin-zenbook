@@ -68,10 +68,11 @@ modules:
           - org.gnome.Loupe
           - net.mullvad.MullvadBrowser
       - notify: true
-        scope: system
+        scope: user
         repo:
           url: https://raw.githubusercontent.com/ShyVortex/helium-flatpak/refs/heads/main/helium.flatpakrepo
           name: helium
+          gpg-verify: false
         install:
           - com.imputnet.Helium
 
